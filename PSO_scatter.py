@@ -87,7 +87,8 @@ for i in range(T):
             x[j, ii] = 1 if vx[j, ii] > np.random.rand(1) else 0
     gb[i] = g_best
 
-    print("最优值为", gb[T - 1], "最优位置为", int("{}".format(x_best)))
+    print("最优值为", gb[T - 1],
+          "最优位置为", int("{}".format(x_best)))
     plt.plot(range(T), gb)
     plt.xlabel("迭代次数")
     plt.ylabel("适应度值")
