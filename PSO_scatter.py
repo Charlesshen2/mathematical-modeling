@@ -88,7 +88,8 @@ for i in range(T):
     gb[i] = g_best
 
     print("最优值为", gb[T - 1],
-          "最优位置为", int("{}".format(x_best)))
+ #         "最优位置为", int("{}".format(x_best)))
+          "最优位置为", x_best)
     plt.plot(range(T), gb)
     plt.xlabel("迭代次数")
     plt.ylabel("适应度值")
