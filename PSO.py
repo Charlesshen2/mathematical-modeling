@@ -5,6 +5,7 @@
 # @File    : PSO.py
 # @Software: PyCharm
 """
+代码转载：https://zhuanlan.zhihu.com/p/564819718
 简单的粒子群算法案例
 求函数f（x，y）=3cos（xy）+x+y2的最小值，其中x的取值范围为［-4，4］，y的取值范围为［-4，4］
 """

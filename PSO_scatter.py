@@ -4,6 +4,12 @@
 # @Author  : charles_shen
 # @File    : PSO_scatter.py
 # @Software: PyCharm
+"""
+代码转载：https://zhuanlan.zhihu.com/p/564819718
+利用离散值求解：
+
+
+"""
 import warnings
 import matplotlib
 import numpy as np
