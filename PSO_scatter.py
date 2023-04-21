@@ -12,9 +12,9 @@ warnings.filterwarnings("ignore")
 matplotlib.rc("font", family="KaiTi")
 matplotlib.rcParams["axes.unicode_minus"] = False
 
-x = np.arange(0 ,9 ,0.01)
+x = np.arange(0, 9, 0.01)
 y = x + 6*np.sin(4*x) + 9*np.cos(5*x)
-plt.figure(figsize=(15,15))
+plt.figure(figsize=(15, 15))
 plt.plot(x, y)
 plt.xlabel("x")
 plt.ylabel("f(x)")
