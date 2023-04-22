@@ -99,7 +99,7 @@ for i in range(T):
                 x[j, ii] = x_min + np.random.rand(1) * (x_max - x_min)
     # 记录历代全局最优值
     gb[i] = g_best
-print("最优值为", gb[T - 1],"最优位置为",x_best)
+print("最优值为", gb[T - 1], "最优位置为", x_best)
 plt.plot(range(T),gb)
 plt.xlabel("迭代次数")
 plt.ylabel("适应度值")

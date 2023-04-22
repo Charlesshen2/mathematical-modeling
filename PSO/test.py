@@ -2,5 +2,5 @@
 # -*- coding: utf-8 -*-
 # @Time    : 4/22/23 9:18 AM
 # @Author  : charles_shen
-# @File    : test.py
+# @File    : simple_GA.py
 # @Software: PyCharm
