@@ -4,14 +4,13 @@
 # @Author  : charles_shen
 # @File    : GA_TSP.py
 # @Software: PyCharm
-#GA_TSP 针对TSP问题重载了 交叉(crossover)、变异(mutation) 两个算子
-
+# GA_TSP 针对TSP问题重载了 交叉(crossover)、变异(mutation) 两个算子
 import numpy as np
 from scipy import spatial
 import matplotlib.pyplot as plt
 
-num_points = 50
 
+num_points = 50
 points_coordinate = np.random.rand(num_points, 2)  # generate coordinate of points
 distance_matrix = spatial.distance.cdist(points_coordinate, points_coordinate, metric='euclidean')
 
