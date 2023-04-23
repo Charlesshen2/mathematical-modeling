@@ -73,8 +73,6 @@ plt.show()
     prob_mut : float between 0 and 1
         Probability of mutation 突变概率
         
-
-        
 """
 
 # 运行遗传算法
