@@ -7,7 +7,7 @@
 
 """
 温度衰减系数、初始温度和马尔科夫链长度
-这些参数都是可以自己调整优化的，不同的参数得到的结果可能也会不相同，
+这些参数都是可以自己调整优化的，不同的参数得到的结果可能也会不相同
 """
 
 
@@ -40,4 +40,5 @@ import pandas as pd
 
 plt.plot(pd.DataFrame(sa.best_y_history).cummin(axis=0))
 plt.show()
+
 #另外，scikit-opt 还提供了三种模拟退火流派: Fast, Boltzmann, Cauchy.
