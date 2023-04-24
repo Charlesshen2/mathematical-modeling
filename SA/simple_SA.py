@@ -5,6 +5,11 @@
 # @File    : simple_SA.py
 # @Software: PyCharm
 
+"""
+温度衰减系数、初始温度和马尔科夫链长度
+这些参数都是可以自己调整优化的，不同的参数得到的结果可能也会不相同，
+"""
+# 需要优化的参数
 demo_func = lambda x: x[0] ** 2 + (x[1] - 0.05) ** 2 + x[2] ** 2
 
 from sko.SA import SA
