@@ -19,7 +19,7 @@ def func(x, y):  # 函数优化问题
 
 # x为公式里的x1,y为公式里面的x2
 class SA:
-    def __init__(self, func, iter=100, T0=100, Tf=0.01, alpha=0.99):
+    def __init__(self, func, iter=600, T0=100, Tf=0.01, alpha=0.99):
         self.func = func
         self.iter = iter  # 内循环迭代次数,即为L =100
         self.alpha = alpha  # 降温系数，alpha=0.99

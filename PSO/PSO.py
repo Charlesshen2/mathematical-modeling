@@ -15,6 +15,7 @@
 修改超参数
 修改适应度函数
 """
+
 import warnings
 warnings.filterwarnings("ignore")
 # 首先绘制这个函数的三维图像
@@ -28,7 +29,7 @@ Y = np.arange(-4, 4, 0.01)
 x, y = np.meshgrid(X, Y)
 Z = 3*np.cos(x * y) + x + y**2
 # 作图
-fig = plt.figure(figsize=(10, 10))
+fig = plt.figure()
 ax3 = plt.axes(projection="3d")
 ax3.plot_surface(x, y, Z, cmap="rainbow")
 # ax3.contour(x ,y ,Z ,zdim = "z" ,offset=-2 ,cmap = "rainbow")
