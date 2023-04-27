@@ -36,7 +36,7 @@ def func2(x):
     if count <= 300:
         return vv
     else:
-        return  vv-1000
+        return vv-1000
 
 
 # 初始化粒子群相关参数
@@ -53,9 +53,9 @@ v_max = 10
 v_min = -10
 x = np.random.randint(0, 2, [N, D])
 v = (v_max - v_min) * np.random.rand(N, D) + v_min
-vx = np.random.rand(N,D) # 这个是将速度转换成概率的矩阵
-value = [89 ,59, 19 ,43 ,100 ,72 ,44 ,16 ,7 ,64]
-volumn = [95 ,75 ,23 ,73 ,50 ,22 ,6 ,57 ,89 ,98]
+vx = np.random.rand(N, D) # 这个是将速度转换成概率的矩阵
+value = [89, 59, 19, 43, 100, 72, 44, 16, 7, 64]
+volumn = [95, 75, 23, 73, 50, 22, 6, 57, 89, 98]
 
 # 初始化每个粒子的适应度值
 p = x  # 用来存储每个粒子的最佳位置
