@@ -19,7 +19,7 @@ import numpy as np
 
 def change(x, y):
     for i in range(len(x)):
-        for j in range(len(y)):
+        for j in range(len(x[0])):
             if x[i, j] == 1:
                 y[i, j] = -1
     return y
@@ -32,13 +32,18 @@ def check_pro(z, x):
     no_pro = 0  # 记录未完成保护的数目
     while len(x) > 1:
         same = 1
+        index_lo = np.ones(1) - 1
         for i in range(1, len(x)):
             # 记录相同数组的位置
-            index_lo = np.ones(1)-1
+
             if (x[i] == x[0]).all():
+                print(x[i])
                 same = same + 1
                 index_lo = np.append(index_lo, i)
+                print(index_lo)
         # 删除已经形成多重保护的数组
+        # print(same)
+        # print(index_lo)
         for i in index_lo[::-1]:
             # print(i)
             x = np.delete(x, int(i), 0)
@@ -58,13 +63,18 @@ def check_pro(z, x):
 if __name__ == "__main__":
     a = np.array([[1, 0, 0],
                   [4, 5, 6],
-                  [7, 0, 0]])
+                  [7, 0, 0],
+                  [4, 4, 6],
+                  [4, 4, 6]])
 
     b = np.array([[1, 0, 0],
-                  [0, 0, 0],
-                  [1, 0, 0]])
+                  [0, 1, 0],
+                  [1, 0, 0],
+                  [0, 1, 0],
+                  [0, 1, 0]])
 
     out = change(b, a)
+    print(out)
     d,c = check_pro(2, out)
     print(d, c)
 

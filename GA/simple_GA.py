@@ -77,7 +77,7 @@ plt.show()
 
 # 运行遗传算法
 ga = GA(func=schaffer, n_dim=2, size_pop=50, max_iter=800, lb=[-4, -4], ub=[4, 4], precision=1e-7)
-ga.register()
+
 best_x, best_y = ga.run()
 print('best_x:', best_x, '\n', 'best_y:', best_y)
 
