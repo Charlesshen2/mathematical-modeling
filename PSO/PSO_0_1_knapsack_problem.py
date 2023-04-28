@@ -52,6 +52,7 @@ w_min = 0.8
 v_max = 10
 v_min = -10
 x = np.random.randint(0, 2, [N, D])
+print(x)
 v = (v_max - v_min) * np.random.rand(N, D) + v_min
 vx = np.random.rand(N, D) # 这个是将速度转换成概率的矩阵
 value = [89, 59, 19, 43, 100, 72, 44, 16, 7, 64]

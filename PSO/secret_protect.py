@@ -30,29 +30,35 @@ def change(x, y):
 def check_pro(z, x):
     flag = 1  # 记录是否完成保护
     no_pro = 0  # 记录未完成保护的数目
-    while len(x) != 0:
-        same = 0
+    while len(x) > 1:
+        same = 1
         for i in range(1, len(x)):
             # 记录相同数组的位置
             index_lo = np.ones(1)-1
             if (x[i] == x[0]).all():
                 same = same + 1
-                index_lo.append(i)
+                index_lo = np.append(index_lo, i)
         # 删除已经形成多重保护的数组
         for i in index_lo[::-1]:
+            # print(i)
             x = np.delete(x, int(i), 0)
         if same < z:
             flag = 0
             no_pro = no_pro + len(index_lo)
-        same = 0
+            # print(index_lo)
+            # print(same)
+            same = 0
+    if len(x) == 1:
+        no_pro = no_pro + 1
+        flag = 0
     return flag, no_pro
 
 
 
 if __name__ == "__main__":
-    a = np.array([[1, 2, 3],
+    a = np.array([[1, 0, 0],
                   [4, 5, 6],
-                  [7, 8, 9]])
+                  [7, 0, 0]])
 
     b = np.array([[1, 0, 0],
                   [0, 0, 0],
