@@ -90,16 +90,14 @@ def check_pro(z, x):
 # 设置适应度函数
 def F(x):
     fred = np.array([])
-    # print(data_1)
     for i in range(len(x)):
-        # print(data_1)
-        k = change(x[i], data)
+        k = change(x[i], data.copy())
         # print(k)
         d, c = check_pro(2, k.reshape(row_a, col_a))
         if d == 1:
             fred = np.append(fred, count_ones(x[i]))
         else:
-            fred = np.append(fred, col_a * row_a + c * 100)
+            fred = np.append(fred, 2)
     # print(fred)
     return fred
 

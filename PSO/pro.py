@@ -5,7 +5,7 @@
 # @File    : pro.py
 # @Software: PyCharm
 # 针对数模校赛的问题提出了基于粒子群算法的有效解
-
+import cvxpy
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ import warnings
 
 
 def count_ones(x):
-    count = 0
+    count = 1
     for i in range(len(x)):
        if int(x[i]) == 1:
            count = count + 1
@@ -81,7 +81,7 @@ data_1 = data_1 .flatten()
 
 # 设置适应度函数
 def func(x):
-    k = change(x, data_1)
+    k = change(x, data_1.copy())
     d, c = check_pro(2, k.reshape(row_a, col_a))
     if d == 1:
         return count_ones(x)

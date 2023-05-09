@@ -4,108 +4,359 @@
 # @Author  : charles_shen
 # @File    : GA_sample.py
 # @Software: PyCharm
+# procedure:GA for Knapsack Problem(KP)
+# input: KP data set, GA parameters
+# output: the best solution
+# begin
+# 	t<-- 0	                       // t:遗传代数
+# 	initialize P(t) by encoding routine;         //P(t):染色体种群
+# 	fitness eval(P) by decoding routine;
+# 	while (not termination condition) do
+# 		crossover P(t) to yield C(t);     //C(t):offspring
+# 		mutation   P(t) to yield C(t);
+# 		fitness eval(C) by decoding routine;
+# 		select P(t+1) from P(t) and C(t);
+# 		t<--t+1;
+# 	end
+#     output:the best solution;
+# end
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
+#初始化种群
+def init(popsize,n):
+    population=[]
+    for i in range(popsize):
+        pop=''
+        for j in range(n):
+            pop=pop+str(np.random.randint(0,2))
+        population.append(pop)
+    return population
+#解码1
+def decode1(x,n,w,c,W):
+    s=[]#储存被选择物体的下标集合
+    g=0
+    f=0
+    for i in range(n):
+        if (x[i] == '1'):
+            if g+w[i] <= W:
+                g = g+w[i]
+                f = f+c[i]
+                s.append(i)
+            else:
+                break
+    return f,s
 
-DNA_SIZE = 24
-POP_SIZE = 80
-CROSSOVER_RATE = 0.6
-MUTATION_RATE = 0.01
-N_GENERATIONS = 100
-X_BOUND = [-2.048, 2.048]
-Y_BOUND = [-2.048, 2.048]
+#适应度函数1
+def fitnessfun1(population,n,w,c,W):
+    value=[]
+    ss=[]
+    for i in range(len(population)):
+        [f,s]= decode1(population[i],n,w,c,W)
+        value.append(f)
+        ss.append(s)
+    return value,ss
+#解码2
+def decode2(x,n,w,c):
+    s=[]#储存被选择物体的下标集合
+    g=0
+    f=0
+    for i in range(n):
+        if (x[i] == '1'):
+            g = g+w[i]
+            f = f+c[i]
+            s.append(i)
+    return g,f,s
 
+#适应度函数2
+def fitnessfun2(population,n,w,c,W,M):
+    value=[]
+    ss=[]
+    for i in range(len(population)):
+        [g,f,s]= decode2(population[i],n,w,c)
+        if g>W:
+            f = -M*f#惩罚
+        value.append(f)
+        ss.append(s)
+    minvalue=min(value)
+    value=[(i-minvalue+1) for i in value]
+    return value,ss
+#轮盘赌选择
+def roulettewheel(population,value,pop_num):
+    fitness_sum=[]
+    value_sum=sum(value)
+    fitness=[i/value_sum for i in value]
+    for i in range(len(population)):##
+        if i==0:
+            fitness_sum.append(fitness[i])
+        else:
+            fitness_sum.append(fitness_sum[i-1]+fitness[i])
+    population_new=[]
+    for j in range(pop_num):###
+        r=np.random.uniform(0,1)
+        for i in range(len(fitness_sum)):###
+            if i==0:
+                if r>=0 and r<=fitness_sum[i]:
+                    population_new.append(population[i])
+            else:
+                if r>=fitness_sum[i-1] and r<=fitness_sum[i]:
+                    population_new.append(population[i])
+    return population_new
+#两点交叉
+def crossover(population_new,pc,ncross):
+    a=int(len(population_new)/2)
+    parents_one=population_new[:a]
+    parents_two=population_new[a:]
+    np.random.shuffle(parents_one)
+    np.random.shuffle(parents_two)
+    offspring=[]
+    for i in range(a):
+        r=np.random.uniform(0,1)
+        if r<=pc:
+            point1=np.random.randint(0,(len(parents_one[i])-1))
+            point2=np.random.randint(point1,len(parents_one[i]))
+            off_one=parents_one[i][:point1]+parents_two[i][point1:point2]+parents_one[i][point2:]
+            off_two=parents_two[i][:point1]+parents_one[i][point1:point2]+parents_two[i][point2:]
+            ncross = ncross+1
+        else:
+            off_one=parents_one[i]
+            off_two=parents_two[i]
+        offspring.append(off_one)
+        offspring.append(off_two)
+    return offspring
+#单点变异1
+def mutation1(offspring,pm,nmut):
+    for i in range(len(offspring)):
+        r=np.random.uniform(0,1)
+        if r<=pm:
+            point=np.random.randint(0,len(offspring[i]))
+            if point==0:
+                if offspring[i][point]=='1':
+                    offspring[i]='0'+offspring[i][1:]
+                else:
+                    offspring[i]='1'+offspring[i][1:]
+            else:
+                if offspring[i][point]=='1':
+                    offspring[i]=offspring[i][:(point-1)]+'0'+offspring[i][point:]
+                else:
+                    offspring[i]=offspring[i][:(point-1)]+'1'+offspring[i][point:]
+            nmut = nmut+1
+    return offspring
+#单点变异2
+def mutation2(offspring,pm,nmut):
+    for i in range(len(offspring)):
+        for j in range(len(offspring[i])):
+            r=np.random.uniform(0,1)
+            if r<=pm:
+                if j==0:
+                    if offspring[i][j]=='1':
+                        offspring[i]='0'+offspring[i][1:]
+                    else:
+                        offspring[i]='1'+offspring[i][1:]
+                else:
+                    if offspring[i][j]=='1':
+                        offspring[i]=offspring[i][:(j-1)]+'0'+offspring[i][j:]
+                    else:
+                        offspring[i]=offspring[i][:(j-1)]+'1'+offspring[i][j:]
+                nmut = nmut+1
+    return offspring
 
-def F(x, y):
-    return 100.0 * (y - x ** 2.0) ** 2.0 + (1 - x) ** 2.0  # 以香蕉函数为例
+#主程序----------------------------------------------------------------------------------------------------------------------------------
+#参数设置-----------------------------------------------------------------------
+gen=1000#迭代次数
+pc=0.25#交叉概率
+pm=0.02#变异概率
+popsize=10#种群大小
+n = 20#物品数,即染色体长度n
+w = [2,5,18,3,2,5,10,4,8,12,5,10,7,15,11,2,8,10,5,9]#每个物品的重量列表
+c = [5,10,12,4,3,11,13,10,7,15,8,19,1,17,12,9,15,20,2,6]#每个物品的代价列表
+W = 40#背包容量
+M = 5#惩罚值
+fun = 1#1-第一种解码方式，2-第二种解码方式（惩罚项）
+#初始化-------------------------------------------------------------------------
+#初始化种群（编码）
+population=init(popsize,n)
+#适应度评价（解码）
+if fun==1:
+    value,s = fitnessfun1(population,n,w,c,W)
+else:
+    value,s = fitnessfun2(population,n,w,c,W,M)
+#初始化交叉个数
+ncross=0
+#初始化变异个数
+nmut=0
+#储存每代种群的最优值及其对应的个体
+t=[]
+best_ind=[]
+last=[]#储存最后一代个体的适应度值
+realvalue=[]#储存最后一代解码后的值
+#循环---------------------------------------------------------------------------
+for i in range(gen):
+    print("迭代次数：")
+    print(i)
+    #交叉
+    offspring_c=crossover(population,pc,ncross)
+    #变异
+    #offspring_m=mutation1(offspring,pm,nmut)
+    offspring_m=mutation2(offspring_c,pm,nmut)
+    mixpopulation=population+offspring_m
+    #适应度函数计算
+    if fun==1:
+        value,s = fitnessfun1(mixpopulation,n,w,c,W)
+    else:
+        value,s = fitnessfun2(mixpopulation,n,w,c,W,M)
+    #轮盘赌选择
+    population=roulettewheel(mixpopulation,value,popsize)
+    #储存当代的最优解
+    result=[]
+    if i==gen-1:
+        if fun==1:
+            value1,s1 = fitnessfun1(population,n,w,c,W)
+            realvalue=s1
+            result=value1
+            last=value1
+        else:
+            for j in range(len(population)):
+                g1,f1,s1 = decode2(population[j],n,w,c)
+                result.append(f1)
+                realvalue.append(s1)
+            last=result
+    else:
+        if fun==1:
+            value1,s1 = fitnessfun1(population,n,w,c,W)
+            result=value1
+        else:
+            for j in range(len(population)):
+                g1,f1,s1 = decode2(population[j],n,w,c)
+                result.append(f1)
+    maxre=max(result)
+    h=result.index(max(result))
+    #将每代的最优解加入结果种群
+    t.append(maxre)
+    best_ind.append(population[h])
 
+#输出结果-----------------------------------------------------------------------
+if fun==1:
+    best_value=max(t)
+    hh=t.index(max(t))
+    f2,s2 = decode1(best_ind[hh],n,w,c,W)
+    print("最优组合为：")
+    print(s2)
+    print("最优解为：")
+    print(f2)
+    print("最优解出现的代数：")
+    print(hh)
+    #画出收敛曲线
+    plt.plot(t)
+    plt.title('The curve of the optimal function value of each generation with the number of iterations',color='#123456')
+    plt.xlabel('the number of iterations')
+    plt.ylabel('the optimal function value of each generation')
+else:
+    best_value=max(result)
+    hh=result.index(max(result))
+    s2 = realvalue[hh]
+    print("最优组合为：")
+    print(s2)
+    print("最优解为：")
+    print(f2)
+import numpy as np
+import matplotlib.pyplot as plt
 
-def plot_3d(ax):
-    X = np.linspace(*X_BOUND, 100)
-    Y = np.linspace(*Y_BOUND, 100)
-    X, Y = np.meshgrid(X, Y)
-    Z = F(X, Y)
-    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm)
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-    plt.pause(3)
-    plt.show()
+#主程序----------------------------------------------------------------------------------------------------------------------------------
+#参数设置-----------------------------------------------------------------------
+gen=1000#迭代次数
+pc=0.25#交叉概率
+pm=0.02#变异概率
+popsize=20#种群大小
+n = 20#物品数,即染色体长度n
+w = [2,5,18,3,2,5,10,4,8,12,5,10,7,15,11,2,8,10,5,9]#每个物品的重量列表
+c = [5,10,12,4,3,11,13,10,7,15,8,19,1,17,12,9,15,20,2,6]#每个物品的代价列表
+W = 40#背包容量
+M = 5#惩罚值
+fun = 1#1-第一种解码方式，2-第二种解码方式（惩罚项）
+#初始化-------------------------------------------------------------------------
+#初始化种群（编码）
+population=init(popsize,n)
+#适应度评价（解码）
+if fun==1:
+    value,s = fitnessfun1(population,n,w,c,W)
+else:
+    value,s = fitnessfun2(population,n,w,c,W,M)
+#初始化交叉个数
+ncross=0
+#初始化变异个数
+nmut=0
+#储存每代种群的最优值及其对应的个体
+t=[]
+best_ind=[]
+last=[]#储存最后一代个体的适应度值
+realvalue=[]#储存最后一代解码后的值
+#循环---------------------------------------------------------------------------
+for i in range(gen):
+    print("迭代次数：")
+    print(i)
+    #适应度函数计算
+    if fun==1:
+        value,s = fitnessfun1(population,n,w,c,W)
+    else:
+        value,s = fitnessfun2(population,n,w,c,W,M)
+    #轮盘赌选择
+    population=roulettewheel(population,value,popsize)
+    #交叉
+    offspring_c=crossover(population,pc,ncross)
+    #变异
+    #offspring_m=mutation1(offspring,pm,nmut)
+    offspring_m=mutation2(offspring_c,pm,nmut)
+    population=offspring_m
 
+    #储存当代的最优解
+    result=[]
+    if i==gen-1:
+        if fun==1:
+            value1,s1 = fitnessfun1(population,n,w,c,W)
+            realvalue=s1
+            result=value1
+            last=value1
+        else:
+            for j in range(len(population)):
+                g1,f1,s1 = decode2(population[j],n,w,c)
+                result.append(f1)
+                realvalue.append(s1)
+            last=result
+    else:
+        if fun==1:
+            value1,s1 = fitnessfun1(population,n,w,c,W)
+            result=value1
+        else:
+            for j in range(len(population)):
+                g1,f1,s1 = decode2(population[j],n,w,c)
+                result.append(f1)
+    maxre=max(result)
+    h=result.index(max(result))
+    #将每代的最优解加入结果种群
+    t.append(maxre)
+    best_ind.append(population[h])
 
-def get_fitness(pop):
-    x, y = translateDNA(pop)
-    pred = F(x, y)
-    return pred
-    # return pred - np.min(pred)+1e-3  # 求最大值时的适应度
-    # return np.max(pred) - pred + 1e-3  # 求最小值时的适应度，通过这一步fitness的范围为[0, np.max(pred)-np.min(pred)]
-
-
-def translateDNA(pop):  # pop表示种群矩阵，一行表示一个二进制编码表示的DNA，矩阵的行数为种群数目
-    x_pop = pop[:, 0:DNA_SIZE]  # 前DNA_SIZE位表示X
-    y_pop = pop[:, DNA_SIZE:]  # 后DNA_SIZE位表示Y
-
-    x = x_pop.dot(2 ** np.arange(DNA_SIZE)[::-1]) / float(2 ** DNA_SIZE - 1) * (X_BOUND[1] - X_BOUND[0]) + X_BOUND[0]
-    y = y_pop.dot(2 ** np.arange(DNA_SIZE)[::-1]) / float(2 ** DNA_SIZE - 1) * (Y_BOUND[1] - Y_BOUND[0]) + Y_BOUND[0]
-    return x, y
-
-
-def crossover_and_mutation(pop, CROSSOVER_RATE=0.8):
-    new_pop = []
-    for father in pop:  # 遍历种群中的每一个个体，将该个体作为父亲
-        child = father  # 孩子先得到父亲的全部基因（这里我把一串二进制串的那些0，1称为基因）
-        if np.random.rand() < CROSSOVER_RATE:  # 产生子代时不是必然发生交叉，而是以一定的概率发生交叉
-            mother = pop[np.random.randint(POP_SIZE)]  # 再种群中选择另一个个体，并将该个体作为母亲
-            cross_points = np.random.randint(low=0, high=DNA_SIZE * 2)  # 随机产生交叉的点
-            child[cross_points:] = mother[cross_points:]  # 孩子得到位于交叉点后的母亲的基因
-        mutation(child)  # 每个后代有一定的机率发生变异
-        new_pop.append(child)
-
-    return new_pop
-
-
-def mutation(child, MUTATION_RATE=0.003):
-    if np.random.rand() < MUTATION_RATE:  # 以MUTATION_RATE的概率进行变异
-        mutate_point = np.random.randint(0, DNA_SIZE)  # 随机产生一个实数，代表要变异基因的位置
-        child[mutate_point] = child[mutate_point] ^ 1  # 将变异点的二进制为反转
-
-
-def select(pop, fitness):  # nature selection wrt pop's fitness
-    idx = np.random.choice(np.arange(POP_SIZE), size=POP_SIZE, replace=True,
-                           p=(fitness) / (fitness.sum()))
-    return pop[idx]
-
-
-def print_info(pop):
-    fitness = get_fitness(pop)
-    max_fitness_index = np.argmax(fitness)
-    print("max_fitness:", fitness[max_fitness_index])
-    x, y = translateDNA(pop)
-    print("最优的基因型：", pop[max_fitness_index])
-    print("(x, y):", (x[max_fitness_index], y[max_fitness_index]))
-    print(F(x[max_fitness_index], y[max_fitness_index]))
-
-
-if __name__ == "__main__":
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    plt.ion()  # 将画图模式改为交互模式，程序遇到plt.show不会暂停，而是继续执行
-    plot_3d(ax)
-
-    pop = np.random.randint(2, size=(POP_SIZE, DNA_SIZE * 2))  # matrix (POP_SIZE, DNA_SIZE)
-    for _ in range(N_GENERATIONS):  # 迭代N代
-        x, y = translateDNA(pop)
-        if 'sca' in locals():
-            sca.remove()
-        sca = ax.scatter(x, y, F(x, y), c='black', marker='o')
-        plt.show()
-        plt.pause(0.1)
-        pop = np.array(crossover_and_mutation(pop, CROSSOVER_RATE))
-        fitness = get_fitness(pop)
-        pop = select(pop, fitness)  # 选择生成新的种群
-
-    print_info(pop)
-    plt.ioff()
-    plot_3d(ax)
+#输出结果-----------------------------------------------------------------------
+if fun==1:
+    best_value=max(t)
+    hh=t.index(max(t))
+    f2,s2 = decode1(best_ind[hh],n,w,c,W)
+    print("最有组合为：")
+    print(s2)
+    print("最优解为：")
+    print(f2)
+    print("最优解出现的代数：")
+    print(hh)
+    #画出收敛曲线
+    plt.plot(t)
+    plt.title('The curve of the optimal function value of each generation with the number of iterations',color='#123456')
+    plt.xlabel('the number of iterations')
+    plt.ylabel('the optimal function value of each generation')
+else:
+    best_value=max(result)
+    hh=result.index(max(result))
+    s2 = realvalue[hh]
+    print("最优组合为：")
+    print(s2)
+    print("最优解为：")
+    print(f2)
