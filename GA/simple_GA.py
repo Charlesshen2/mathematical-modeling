@@ -19,7 +19,7 @@ import numpy as np
 from sko.GA import GA
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from sko.operators import ranking, selection, crossover, mutation
 
 # def schaffer(p):
 #     '''
